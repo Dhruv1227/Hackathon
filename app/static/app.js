@@ -57,9 +57,6 @@ function placePopup(f, lngLat) {
 // ------------------------------------------------------------------ data
 async function init() {
   state.meta = await (await fetch("/api/meta")).json();
-  const badge = $("#geminiBadge");
-  badge.textContent = state.meta.gemini ? "Gemini connected" : "Gemini offline: local model only";
-  badge.className = "badge " + (state.meta.gemini ? "ok" : "warn");
   $("#budget").max = state.meta.upload_budget; $("#budget").value = state.meta.upload_budget;
   fillDatasets(state.meta.datasets);
   if (state.meta.datasets.length) await loadDataset(state.meta.datasets[0].id);
@@ -74,7 +71,7 @@ async function loadDataset(id) {
   const d = await (await fetch(`/api/data/${id}`)).json();
   Object.assign(state, { dsId: id, records: d.records, stats: d.stats, cats: new Set(), urgs: new Set(), places: new Set(), time: null, q: "" });
   $("#search").value = "";
-  $("#summary").innerHTML = "Uses one Gemini call on ~150 representative tweets from the current filters.";
+  $("#summary").innerHTML = "";
   $("#summary").classList.add("muted");
   const places = new Map();
   for (const r of d.records) if (r.rel && r.canon) for (const p of r.places) places.set(p.name, (places.get(p.name) || 0) + 1);
@@ -119,14 +116,12 @@ function renderStats() {
   const uniq = state.records.filter((r) => r.canon);
   const rel = uniq.filter((r) => r.rel).length;
   const mapped = state.view.filter((r) => r.places.some((p) => p.prec !== "region")).length;
-  const byG = uniq.filter((r) => r.by === "gemini").length;
   $("#stats").innerHTML = [
     [state.records.length.toLocaleString(), "tweets"],
     [`${Math.round((100 * rel) / Math.max(1, uniq.length))}%`, "relevant"],
     [state.view.length.toLocaleString(), "in view"],
     [mapped.toLocaleString(), "mapped"],
-  ].map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("") +
-    `<div class="muted" style="grid-column:1/-1;font-size:11.5px">${uniq.length.toLocaleString()} unique after dedupe · ${byG.toLocaleString()} reviewed by Gemini · ${(uniq.length - byG).toLocaleString()} by local model</div>`;
+  ].map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
 }
 
 function renderChips() {

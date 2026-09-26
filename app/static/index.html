@@ -12,7 +12,6 @@
   <div class="brand"><span class="logo">≋</span> <span class="name">Living Flood Map</span></div>
   <select id="dataset" aria-label="Dataset"></select>
   <button id="uploadBtn" class="btn primary">Upload<span class="name"> CSV</span></button>
-  <span id="geminiBadge" class="badge"></span>
   <button id="panelToggle" class="btn ghost mobile-only" aria-label="Toggle panel">☰</button>
 </header>
 
@@ -57,7 +56,7 @@
     <section class="block">
       <div class="block-h">Situation summary</div>
       <button id="sumBtn" class="btn primary wide">Summarize this view</button>
-      <div id="summary" class="summary muted">Uses one Gemini call on ~150 representative tweets from the current filters.</div>
+      <div id="summary" class="summary muted"></div>
     </section>
 
     <section class="block">
