@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from pipeline.gemini import Gemini, label_batch, label_prompt, last_known_remaining
+from pipeline.gemini import Gemini, estimated_remaining, label_batch, label_prompt, last_known_remaining
 from pipeline.metrics import place_match
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -88,7 +88,8 @@ def main():
     hand = pd.read_csv(HAND, keep_default_na=False) if HAND.exists() else pd.DataFrame()
 
     if a.cmd == "status":
-        print(f"proxy quota remaining (as of last call): {last_known_remaining()}")
+        print(f"quota remaining: {estimated_remaining()} (conservative) | proxy reports {last_known_remaining()} | "
+              f"our log: {Gemini.ledger_total() + Gemini.ledger_failures()} requests sent")
         print(f"calls spent (ledger): {Gemini.ledger_total()}  failed attempts: {Gemini.ledger_failures()}  prompt={prompt_hash()} "
               f"frozen={json.loads(FROZEN.read_text()) if FROZEN.exists() else None}")
         return

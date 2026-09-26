@@ -1,9 +1,13 @@
 .venv
+.env
+.git
+.deploy
+.claude
 data/raw
 data/cache/emb
 data/cache/gemini
+data/cache/gemini_ledger.jsonl
 data/labels
-.env
-.git
+data/*.log
 labeling
-__pycache__
+**/__pycache__

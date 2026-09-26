@@ -1,0 +1,12 @@
+# Runtime only (the deployed app): no PyTorch or scikit-learn. Embeddings run on ONNX Runtime and the
+# classifier heads on numpy (models/local_model_lite.npz), with identical outputs.
+fastapi==0.141.1
+uvicorn==0.54.0
+python-multipart==0.0.32
+pandas==3.0.6
+numpy==2.4.6
+requests==2.34.2
+python-dotenv==1.2.3
+onnxruntime==1.30.0
+tokenizers==0.23.2
+huggingface_hub==1.33.0

@@ -122,13 +122,16 @@ def evaluate():
     EVAL.write_text(json.dumps({**prev, "local": res}, indent=1))
 
 
-def run(budget: int):
+def run(budget: int, replay: bool = False):
+    """replay=True rebuilds the output from cached Gemini answers only (0 requests)."""
     from app.server import to_records
     from pipeline.cascade import process
     raw = pd.read_csv(RAW)
     pre = pd.read_csv(SAMPLE, keep_default_na=False) if SAMPLE.exists() else None
-    df, stats = process(raw, budget=budget, batch_size=200, gemini=Gemini(budget=budget), precomputed=pre,
-                        geocode_limit=300, progress=lambda m, f: print(f"  {m}"))
+    client = Gemini(budget=budget)
+    client.cache_only = replay
+    df, stats = process(raw, budget=budget, batch_size=200, gemini=client, precomputed=pre,
+                        geocode_limit=300, progress=lambda m, f: print(f"  {m}", flush=True))
     stats = json.loads(json.dumps(stats, default=str))
     OUT.write_text(json.dumps({"name": "Global disasters (bonus dataset)", "stats": stats, "records": to_records(df)},
                               separators=(",", ":")))
@@ -153,6 +156,7 @@ if __name__ == "__main__":
     ap.add_argument("cmd", choices=["prepare", "sample", "evaluate", "run"])
     ap.add_argument("--max-calls", type=int, default=22)
     ap.add_argument("--budget", type=int, default=68)
+    ap.add_argument("--replay", action="store_true", help="rebuild from cached Gemini answers only (0 requests)")
     a = ap.parse_args()
     {"prepare": prepare, "sample": lambda: sample(a.max_calls), "evaluate": evaluate,
-     "run": lambda: run(a.budget)}[a.cmd]()
+     "run": lambda: run(a.budget, a.replay)}[a.cmd]()

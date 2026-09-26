@@ -33,13 +33,17 @@ QUERY = """[out:json][timeout:180];
 );
 out center tags;"""
 
-# Big rivers are often named only on a waterway relation whose member segments are unnamed (the Bow River
-# through downtown Calgary). Fetch those members so the river snaps to the right stretch.
+# Rivers come as a few very long segments, so a segment's "centre" can sit kilometres from the stretch people
+# tweet about (the Bow River through downtown Calgary). Fetch river geometry and sample points along it; big rivers
+# are often named only on a waterway relation, so relation members inherit the relation's name.
 RIVER_QUERY = """[out:json][timeout:180];
-relation["waterway"~"^(river|stream|canal)$"]["name"]({b})->.r;
-way(r.r)({b})->.w;
-.r out body;
-.w out center;"""
+relation["waterway"~"^(river|stream|canal)$"]["name"]({b})->.rels;
+way(r.rels)({b})->.members;
+way["waterway"~"^(river|stream|canal)$"]["name"]({b})->.named;
+.rels out body;
+(.members; .named;);
+out geom;"""
+RIVER_STEP = 8  # keep every 8th vertex: roughly one point every few hundred metres
 
 
 def kind_of(tags: dict) -> str:
@@ -108,22 +112,17 @@ def _add_river_members(out: dict, bbox: str):
             break
     r.raise_for_status()
     els = r.json().get("elements", [])
-    centers = {e["id"]: e["center"] for e in els if e["type"] == "way" and "center" in e}
+    rel_name = {}
     for rel in (e for e in els if e["type"] == "relation"):
-        name = rel.get("tags", {}).get("name")
+        for m in rel.get("members", []):
+            if m["type"] == "way" and rel.get("tags", {}).get("name"):
+                rel_name.setdefault(m["ref"], rel["tags"]["name"])
+    sampled = {}
+    for w in (e for e in els if e["type"] == "way" and e.get("geometry")):
+        name = w.get("tags", {}).get("name") or rel_name.get(w["id"])
         if not name:
             continue
-        entry = out.setdefault(name, {"kind": "river", "points": []})
-        for m in rel.get("members", []):
-            c = centers.get(m["ref"]) if m["type"] == "way" else None
-            if c and len(entry["points"]) < 1500:
-                entry["points"].append([round(c["lat"], 5), round(c["lon"], 5)])
-
-
-if __name__ == "__main__":
-    # Calgary + southern Alberta 2013 flood area (Canmore, High River, Okotoks, Siksika, Medicine Hat)
-    feats = fetch(49.9, -115.6, 51.4, -110.5)
-    from collections import Counter
-    print(len(feats), Counter(v["kind"] for v in feats.values()).most_common())
-    for n in ["Inglewood", "Bow River", "Elbow River", "Mission", "Bowness", "Sunnyside", "Blackfoot Trail", "Deerfoot Trail"]:
-        print(n, feats.get(n, {}).get("kind"), (feats.get(n) or {}).get("points", [])[:2])
+        pts = sampled.setdefault(name, [])
+        pts.extend([round(g["lat"], 5), round(g["lon"], 5)] for g in w["geometry"][::RIVER_STEP])
+    for name, pts in sampled.items():  # geometry samples replace the misleading segment centres
+        out[name] = {"kind": "river", "points": pts[:1500]}

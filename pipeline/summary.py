@@ -29,18 +29,24 @@ def pick_representative(view: pd.DataFrame, n: int = N_PICK) -> pd.DataFrame:
 
 
 def summary_prompt(picked: pd.DataFrame, filters_desc: str, total: int) -> str:
+    from pipeline.world import country_name
     lines = []
     for i, r in enumerate(picked.itertuples()):
         places = ",".join(p["name"] for p in r.places[:3]) or "-"
-        lines.append(f"[{i}] ({r.category}, urgency {r.urgency}, shared {r.group_size}x, places: {places}) {r.text}")
+        cc = getattr(r, "cc", None)
+        cc = cc if isinstance(cc, str) and cc else None  # pandas turns a missing country into NaN
+        where = f"{places}; {country_name(cc)}" if cc else places
+        hz = getattr(r, "hazard", "")
+        hz = f"{hz}, " if isinstance(hz, str) and hz else ""
+        lines.append(f"[{i}] ({hz}{r.category}, urgency {r.urgency}, shared {r.group_size}x, where: {where}) {r.text}")
     cats = ", ".join(f"{k}={v}" for k, v in CATEGORIES.items())
     return f"""You are briefing flood emergency coordinators and First Nations community leaders.
-Below are {len(picked)} representative tweets chosen from {total} relevant flood tweets matching: {filters_desc}.
+Below are {len(picked)} representative tweets chosen from {total} relevant tweets matching: {filters_desc}.
 Categories: {cats}
 
 Write a situation summary in Markdown, at most 250 words, with these sections:
 **Overview** (2-3 sentences: what is happening, where, how severe)
-**Most affected places** (bullets: place, what is reported there)
+**Most affected places** (bullets: place and country, what is reported there; group by country if several)
 **Urgent needs & safety issues** (bullets; say "none reported" if none)
 **Infrastructure & services** (bullets: roads, bridges, power, water)
 **Response & aid** (bullets)

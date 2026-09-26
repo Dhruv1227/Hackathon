@@ -120,8 +120,10 @@ def load_countries() -> dict:
     return json.loads(COUNTRIES.read_text())
 
 
-def country_name(cc: str | None) -> str:
-    return load_countries().get((cc or "").upper(), {}).get("name", cc or "")
+def country_name(cc) -> str:
+    if not isinstance(cc, str) or not cc:
+        return ""
+    return load_countries().get(cc.upper(), {}).get("name", cc)
 
 
 if __name__ == "__main__":

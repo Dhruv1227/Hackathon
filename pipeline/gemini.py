@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,6 +35,21 @@ class BudgetExceeded(RuntimeError):
 
 # Keep this many proxy requests in reserve: uploads stop using Gemini (local model only) below it.
 QUOTA_RESERVE = int(os.getenv("GEMINI_QUOTA_RESERVE", "100"))
+
+
+QUOTA_TOTAL = int(os.getenv("GEMINI_QUOTA_TOTAL", "1000"))
+
+
+def estimated_remaining() -> int | None:
+    """Conservative remaining quota: the lower of the proxy's own figure and (quota - requests we logged, including
+    failed ones). The proxy under-counts parallel requests (20 concurrent requests moved its counter by 6), so we
+    never rely on its number alone."""
+    ours = None
+    if LEDGER.exists():
+        lines = LEDGER.read_text().splitlines()
+        ours = QUOTA_TOTAL - len(lines)  # successes and failures both count
+    vals = [v for v in (last_known_remaining(), ours) if v is not None]
+    return min(vals) if vals else None
 
 
 def last_known_remaining() -> int | None:
@@ -66,6 +82,7 @@ class Gemini:
 
     def __init__(self, budget: int | None = None, model: str | None = None, allow_reserve: bool = False):
         self.allow_reserve = allow_reserve  # summaries may dip into the reserve; bulk labeling may not
+        self.cache_only = False
         self.key = os.getenv("GEMINI_API_KEY", "").strip()
         self.model_env = model or os.getenv("GEMINI_MODEL", "").strip()
         self.base_url = os.getenv("GEMINI_BASE_URL", "").strip().rstrip("/")
@@ -83,8 +100,9 @@ class Gemini:
         default_model = "gemini-3-flash-preview" if self.backend == "hackathon" else "gemini-2.5-flash"
         self.model = self.model_env or default_model
         self.requests_remaining = None
-        self.budget = budget  # max calls for this client instance (None = unlimited)
+        self.budget = budget  # max requests for this client instance (None = unlimited), failed attempts included
         self.spent = 0
+        self._lock = threading.Lock()
         self.dry_run = not (self.key or (self.backend == "vertex" and project))
         self._client = None
         if self.dry_run or self.backend in ("openai", "hackathon"):
@@ -150,6 +168,16 @@ class Gemini:
             return 0
         return sum(1 for line in LEDGER.open() if '"failed"' in line)
 
+    def _reserve(self):
+        """Claim one request under a lock, so parallel threads can't all pass the check and overshoot the cap."""
+        with self._lock:
+            if self.budget is not None and self.spent >= self.budget:
+                raise BudgetExceeded(f"budget of {self.budget} calls used")
+            remaining = estimated_remaining()
+            if remaining is not None and (remaining <= 10 or (remaining <= QUOTA_RESERVE and not self.allow_reserve)):
+                raise BudgetExceeded(f"only {remaining} proxy requests left (reserve {QUOTA_RESERVE})")
+            self.spent += 1
+
     def _log_failure(self, tag, h, err, code):
         LEDGER.parent.mkdir(parents=True, exist_ok=True)
         with LEDGER.open("a") as f:
@@ -164,15 +192,12 @@ class Gemini:
         if self.dry_run:
             print(f"[gemini dry-run] {tag}: {len(prompt)} chars, not sent")
             return ""
-        if self.budget is not None and self.spent >= self.budget:
-            raise BudgetExceeded(f"budget of {self.budget} calls used")
-        remaining = self.requests_remaining if self.requests_remaining is not None else last_known_remaining()
-        if remaining is not None and (remaining <= 10 or (remaining <= QUOTA_RESERVE and not self.allow_reserve)):
-            raise BudgetExceeded(f"only {remaining} proxy requests left (reserve {QUOTA_RESERVE})")
-
+        if self.cache_only:  # replay mode: answers must come from the cache, never from the network
+            raise BudgetExceeded("cache-only replay: prompt not cached")
         # the hackathon proxy counts failed requests and uses 429 for "quota exhausted": retry 5xx once, never 4xx
         max_attempts = 2 if self.backend == "hackathon" else 4
         for attempt in range(max_attempts):
+            self._reserve()  # every attempt is one request against the budget, checked atomically across threads
             t0 = time.time()
             try:
                 text, n_in, n_out = self._call(prompt, temperature)
@@ -186,7 +211,6 @@ class Gemini:
                 wait = 2 ** attempt * 5
                 print(f"[gemini] {type(e).__name__} {code} -- retrying in {wait}s")
                 time.sleep(wait)
-        self.spent += 1
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         cached.write_text(text)
         LEDGER.parent.mkdir(parents=True, exist_ok=True)

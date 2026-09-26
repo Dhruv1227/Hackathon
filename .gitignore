@@ -9,3 +9,7 @@ data/pip_install.log
 data/cache/*
 !data/cache/osm/
 !data/cache/geocode.json
+# large, rebuildable intermediates
+data/processed/bonus_clean.csv
+data/processed/external.csv
+.deploy/

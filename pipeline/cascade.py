@@ -59,14 +59,14 @@ def plan_budget(local: pd.DataFrame, budget: int, batch_size: int) -> list[int]:
     so the ranking uses p_flood = P(relevant) x P(hazard is flood):
       1. uncertain band: p_flood in [LO, HI], most uncertain first
       2. likely floods (Gemini adds category, urgency, places, country): ones naming an unmatched place first
-      3. everything else, most uncertain about relevance first"""
+      3. everything else, most flood-like first (catches floods the local model under-rates)"""
     reserve = 1 if budget >= 10 else 0  # one spare call for retrying dropped lines
     cap = max(0, budget - reserve) * batch_size
     p = local["p_flood"]
     band = local[(p >= LO) & (p <= HI)].sort_values("flood_uncertainty", ascending=False).index.tolist()
     likely = local[p > HI].assign(h=lambda d: ~d["place_hint"]).sort_values(["h", "p_flood"], ascending=[True, False])
     chosen = set(band) | set(likely.index)
-    rest = local[~local.index.isin(chosen)].sort_values("uncertainty", ascending=False).index.tolist()
+    rest = local[~local.index.isin(chosen)].sort_values("p_flood", ascending=False).index.tolist()
     return (band + likely.index.tolist() + rest)[:cap]
 
 

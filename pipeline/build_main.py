@@ -24,7 +24,9 @@ def main():
         f.exists() for f in parts) else None
     g = Gemini(budget=0)
     g.dry_run = True  # never spend calls while building the shipped dataset
-    df, stats = process(raw, budget=0, gemini=g, precomputed=pre, progress=lambda m, f: print(f"  {m}"))
+    # the main dataset is one flood event, and its Gemini labels (frozen v3 prompt) predate the hazard field
+    df, stats = process(raw, budget=0, gemini=g, precomputed=pre, default_hazard="FLOOD", geocode_limit=300,
+                        progress=lambda m, f: print(f"  {m}"))
     stats = json.loads(json.dumps(stats, default=str))
     OUT.write_text(json.dumps({"name": "2013 Alberta floods (provided dataset)", "stats": stats,
                                "records": to_records(df)}, separators=(",", ":")))
