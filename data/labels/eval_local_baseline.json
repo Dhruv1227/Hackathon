@@ -1,0 +1,8 @@
+{
+  "note": "Local model + gazetteer only, no Gemini labels yet. Gold scored once for reporting; decisions made on tune.",
+  "date": "2026-09-26",
+  "tune": {"n": 100, "rel_acc": 0.870, "rel_f1": 0.871, "rel_auc": 0.924, "band_n": 32, "band_acc": 0.719, "outside_acc": 0.941,
+           "cat_acc": 0.431, "place_recall": 0.849, "place_precision": 0.849},
+  "gold": {"n": 200, "rel_acc": 0.880, "rel_precision": 0.917, "rel_recall": 0.846, "rel_f1": 0.880, "rel_auc": 0.945,
+           "band_n": 82, "band_acc": 0.756, "outside_acc": 0.966, "cat_acc": 0.480, "place_recall": 0.864, "place_precision": 0.894}
+}

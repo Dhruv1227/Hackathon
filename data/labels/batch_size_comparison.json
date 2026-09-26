@@ -1,0 +1,44 @@
+{
+ "prompt_hash": "e818f0f56a2e",
+ "results": {
+  "50": {
+   "n_labeled": 199,
+   "n_missing": 1,
+   "rel_acc": 0.96,
+   "rel_precision": 0.961,
+   "rel_recall": 0.961,
+   "rel_f1": 0.961,
+   "cat_acc": 0.551,
+   "cat_n": 98,
+   "loc_recall": 0.852,
+   "loc_precision": 0.806,
+   "loc_n": 88
+  },
+  "100": {
+   "n_labeled": 200,
+   "n_missing": 0,
+   "rel_acc": 0.965,
+   "rel_precision": 0.971,
+   "rel_recall": 0.962,
+   "rel_f1": 0.966,
+   "cat_acc": 0.576,
+   "cat_n": 99,
+   "loc_recall": 0.886,
+   "loc_precision": 0.757,
+   "loc_n": 88
+  },
+  "200": {
+   "n_labeled": 200,
+   "n_missing": 0,
+   "rel_acc": 0.96,
+   "rel_precision": 0.971,
+   "rel_recall": 0.952,
+   "rel_f1": 0.961,
+   "cat_acc": 0.592,
+   "cat_n": 98,
+   "loc_recall": 0.898,
+   "loc_precision": 0.806,
+   "loc_n": 88
+  }
+ }
+}

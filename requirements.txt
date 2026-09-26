@@ -1,0 +1,12 @@
+fastapi==0.141.1
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+pandas==3.0.6
+numpy==2.4.6
+scikit-learn==1.9.1
+joblib==1.6.0
+sentence-transformers==6.1.0
+transformers==5.17.0
+requests==2.34.2
+python-dotenv==1.2.3
+google-genai==2.25.0

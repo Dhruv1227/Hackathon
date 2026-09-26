@@ -1,0 +1,101 @@
+group_id,split,relevant,confidence,category,urgency,locations
+233,tune,1,1.0,AID,1,Calgary
+249,tune,0,1.0,,0,
+277,tune,1,1.0,AID,1,National;Calgary
+616,tune,1,1.0,NEEDS,3,Stoney Nakoda;Morley;Morley High School
+703,tune,1,1.0,SUPPORT,1,Calgary
+807,tune,1,1.0,AID,1,Calgary
+841,tune,1,1.0,AID,1,Medicine Hat;Alberta
+1138,tune,0,1.0,,0,
+1344,tune,0,1.0,,0,
+1390,tune,0,1.0,,0,
+1472,tune,0,1.0,,0,
+1508,tune,1,1.0,AID,1,Calgary
+1511,tune,0,1.0,,0,
+1529,tune,1,1.0,ADVISORY,1,Glenbow Museum;Calgary
+1609,tune,0,1.0,,0,
+1670,tune,0,1.0,,0,
+1767,tune,0,1.0,,0,
+1799,tune,0,1.0,,0,
+1814,tune,0,0.8888888888888888,,0,
+1888,tune,0,1.0,,0,
+1961,tune,0,1.0,,0,
+1991,tune,1,1.0,ADVISORY,1,Calgary
+2002,tune,0,1.0,,0,
+2044,tune,1,1.0,AID,1,
+2080,tune,1,1.0,OTHER,1,Harry Hayes Building;Calgary
+2121,tune,0,1.0,,0,
+2232,tune,0,1.0,,0,
+2270,tune,0,1.0,,0,
+2336,tune,1,1.0,PROPERTY,2,Saddledome
+2339,tune,1,1.0,INFRA,2,Alberta;Calgary
+2375,tune,0,1.0,,0,
+2410,tune,0,1.0,,0,
+2455,tune,1,1.0,INFRA,2,Canmore;Banff;Highway 1
+2564,tune,0,1.0,,0,
+2581,tune,1,1.0,AID,1,Alberta
+2598,tune,0,1.0,,0,
+2676,tune,0,1.0,,0,
+2792,tune,1,1.0,OTHER,1,Calgary
+3015,tune,0,1.0,,0,
+3064,tune,1,1.0,ADVISORY,2,Edmonton;Devon
+3282,tune,1,1.0,PROPERTY,2,Calgary Stampede;Saddledome;Calgary
+3535,tune,1,1.0,AID,1,Calgary
+3559,tune,1,0.8888888888888888,SUPPORT,1,Jamesons;17 Avenue;Calgary
+3769,tune,1,1.0,AID,1,Alberta
+3992,tune,1,1.0,INFRA,2,Calgary;Downtown Calgary
+4002,tune,1,1.0,SUPPORT,1,Alberta
+4074,tune,1,1.0,AID,1,Cliff Bungalow;Mission;Calgary
+4098,tune,0,1.0,,0,
+4181,tune,0,1.0,,0,
+4372,tune,0,1.0,,0,
+4395,tune,0,1.0,,0,
+4399,tune,1,1.0,PROPERTY,2,Mission;Elbow River;Calgary
+4543,tune,1,1.0,SUPPORT,1,Alberta;Medicine Hat
+4607,tune,1,1.0,SUPPORT,1,Calgary
+4810,tune,0,1.0,,0,
+4842,tune,1,1.0,ADVISORY,1,Calgary
+4978,tune,1,1.0,OTHER,1,Calgary
+4981,tune,1,1.0,OTHER,2,Calgary;Safeway
+5116,tune,1,1.0,SUPPORT,1,Calgary
+5159,tune,0,1.0,,0,
+5200,tune,0,1.0,,0,
+5286,tune,0,1.0,,0,
+5287,tune,0,1.0,,0,
+5451,tune,0,1.0,,0,
+5490,tune,1,1.0,INFRA,2,Calgary Stampede
+5830,tune,1,1.0,AID,1,Calgary
+5838,tune,1,1.0,INFRA,2,Anderson Station;Chinook Centre;39 Street Station;Heritage Station;Calgary
+5852,tune,1,1.0,NEEDS,3,Calgary
+5902,tune,0,1.0,,0,
+6056,tune,0,1.0,,0,
+6171,tune,0,1.0,,0,
+6283,tune,1,1.0,EVAC,1,Calgary;High River
+6352,tune,0,1.0,,0,
+6485,tune,1,1.0,INFRA,2,Bow Valley College;Calgary
+6612,tune,1,1.0,PROPERTY,2,High River
+6695,tune,0,1.0,,0,
+6796,tune,0,1.0,,0,
+6979,tune,1,1.0,AID,1,Alberta
+6985,tune,1,1.0,ADVISORY,2,Calgary
+7008,tune,1,1.0,OTHER,1,Calgary
+7022,tune,1,1.0,PROPERTY,1,Bow River;Calgary
+7056,tune,0,1.0,,0,
+7069,tune,1,1.0,INFRA,2,Calgary
+7133,tune,1,1.0,AID,1,Calgary
+7135,tune,0,1.0,,0,
+7145,tune,1,1.0,SUPPORT,1,Medicine Hat
+7175,tune,0,1.0,,0,
+7207,tune,1,1.0,ADVISORY,1,Alberta
+7228,tune,0,1.0,,0,
+7238,tune,0,1.0,,0,
+7275,tune,1,1.0,SUPPORT,1,Calgary
+7302,tune,1,1.0,SUPPORT,1,Edmonton;Calgary
+7484,tune,0,1.0,,0,
+7578,tune,1,1.0,AID,1,Alberta
+7660,tune,1,0.8888888888888888,OTHER,1,Calgary;Langevin Bridge
+7689,tune,0,1.0,,0,
+7774,tune,1,1.0,OTHER,1,Calgary
+1087,tune,1,1.0,OTHER,1,Calgary
+7815,tune,1,1.0,HUMAN,2,Calgary
+7916,tune,0,1.0,,0,

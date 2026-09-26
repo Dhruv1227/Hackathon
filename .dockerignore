@@ -1,0 +1,9 @@
+.venv
+data/raw
+data/cache/emb
+data/cache/gemini
+data/labels
+.env
+.git
+labeling
+__pycache__

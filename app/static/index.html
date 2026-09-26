@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Living Flood Map</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">≋</span> <span class="name">Living Flood Map</span></div>
+  <select id="dataset" aria-label="Dataset"></select>
+  <button id="uploadBtn" class="btn primary">Upload<span class="name"> CSV</span></button>
+  <span id="geminiBadge" class="badge"></span>
+  <button id="panelToggle" class="btn ghost mobile-only" aria-label="Toggle panel">☰</button>
+</header>
+
+<main class="layout">
+  <aside id="panel" class="panel">
+    <section class="stats" id="stats"></section>
+
+    <section class="block">
+      <div class="block-h">Relevance</div>
+      <div class="seg" id="relSeg">
+        <button data-v="rel" class="on">Relevant</button>
+        <button data-v="unsure">Uncertain</button>
+        <button data-v="irr">Not relevant</button>
+        <button data-v="all">All</button>
+      </div>
+      <label class="check"><input type="checkbox" id="uniqueOnly" checked> Unique tweets only (fold retweets &amp; copies)</label>
+    </section>
+
+    <section class="block">
+      <div class="block-h">Impact category <button class="link" data-clear="cat">clear</button></div>
+      <div class="chips" id="catChips"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-h">Urgency <button class="link" data-clear="urg">clear</button></div>
+      <div class="chips" id="urgChips"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-h">Location <button class="link" data-clear="place">clear</button></div>
+      <input id="placeInput" list="placeList" placeholder="Filter by place (e.g. Inglewood)" autocomplete="off">
+      <datalist id="placeList"></datalist>
+      <div class="chips" id="placeChips"></div>
+      <label class="check"><input type="checkbox" id="mappedOnly"> Only tweets with a mapped location</label>
+    </section>
+
+    <section class="block">
+      <div class="block-h">Search</div>
+      <input id="search" placeholder="Words in tweet text" autocomplete="off">
+    </section>
+
+    <section class="block">
+      <div class="block-h">Situation summary</div>
+      <button id="sumBtn" class="btn primary wide">Summarize this view</button>
+      <div id="summary" class="summary muted">Uses one Gemini call on ~150 representative tweets from the current filters.</div>
+    </section>
+
+    <section class="block">
+      <div class="block-h">Export view</div>
+      <div class="row">
+        <button id="exGeo" class="btn">GeoJSON</button>
+        <button id="exCsv" class="btn">CSV</button>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-h"><span id="listTitle">Tweets</span>
+        <select id="sort" aria-label="Sort"><option value="urg">Most urgent</option><option value="shared">Most shared</option><option value="time">Newest</option></select>
+      </div>
+      <div id="list" class="list"></div>
+      <button id="more" class="btn wide ghost">Show more</button>
+    </section>
+  </aside>
+
+  <div class="mapwrap">
+    <div id="map"></div>
+    <div class="maptools">
+      <div class="seg small" id="colorSeg"><button data-v="cat" class="on">Color: category</button><button data-v="urg">urgency</button></div>
+      <label class="check small"><input type="checkbox" id="showRegion"> Province-level places</label>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div id="timeline" class="timeline hidden">
+      <div class="tl-h"><span>Timeline</span><span id="tlRange" class="muted"></span><button class="link" id="tlClear">clear</button></div>
+      <svg id="tlSvg" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+</main>
+
+<dialog id="uploadDlg">
+  <form method="dialog" id="uploadForm">
+    <h3>Upload a CSV of tweets</h3>
+    <p class="muted">Any CSV with a text column (<code>tweet</code>, <code>text</code>, <code>tweet_text</code>…). A timestamp column (<code>created_at</code>, <code>date</code>…) enables the timeline.</p>
+    <input type="file" id="file" accept=".csv,text/csv" required>
+    <label>Gemini call budget: <b id="budgetVal"></b> calls <span class="muted">(≈ <span id="budgetTweets"></span> tweets reviewed by Gemini; the local model handles the rest)</span>
+      <input type="range" id="budget" min="0" max="20" value="20">
+    </label>
+    <div id="jobStatus" class="muted"></div>
+    <div class="progress"><div id="jobBar"></div></div>
+    <menu><button value="cancel" class="btn ghost">Close</button><button id="startUpload" value="default" class="btn primary">Process</button></menu>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

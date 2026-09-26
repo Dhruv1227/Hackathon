@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "labeler",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "labeling.app"
+      ],
+      "port": 5001
+    },
+    {
+      "name": "app",
+      "runtimeExecutable": ".venv/bin/uvicorn",
+      "runtimeArgs": [
+        "app.server:app",
+        "--port",
+        "7860"
+      ],
+      "port": 7860
+    }
+  ]
+}

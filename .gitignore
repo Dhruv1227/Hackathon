@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+data/raw/
+data/pip_install.log
+# caches: keep the small OSM + geocode snapshots (needed by the deployed app), drop the rest
+data/cache/*
+!data/cache/osm/
+!data/cache/geocode.json

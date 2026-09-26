@@ -1,0 +1,11 @@
+== GOLD (n=200, 52% relevant) — local model only, no Gemini
+relevance: acc=0.945  P=0.970  R=0.923  F1=0.946  AUC=0.974
+uncertain band [0.15,0.85]: 33 tweets, acc inside=0.848, acc outside=0.964
+category (relevant, hand-labeled): acc=0.422 n=102
+  confusions: {('OTHER', 'PROPERTY'): 12, ('SUPPORT', 'PROPERTY'): 7, ('OTHER', 'SUPPORT'): 5, ('ADVISORY', 'PROPERTY'): 4, ('OTHER', 'INFRA'): 3, ('OTHER', 'NEEDS'): 3}
+places (gazetteer only, relevant tweets): recall=0.864 precision=0.894 (excl. provinces, gold=88); incl. provinces recall=0.833
+cascade (local decides outside band, Gemini inside):
+  band [0.15,0.85]: Gemini reviews 16% -> acc=0.950 F1=0.951
+  band [0.05,0.95]: Gemini reviews 33% -> acc=0.955 F1=0.956
+  band [0.00,1.01]: Gemini reviews 100% -> acc=0.960 F1=0.961
+  Gemini category acc=0.569
