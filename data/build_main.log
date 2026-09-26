@@ -1,0 +1,9 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+  Cleaning and grouping copies
+  Detecting event region and building gazetteer
+  Local model scoring 7441 unique tweets
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 8540.01it/s]
+  Resolving locations
+  Done
+wrote /Users/dhruvpatel/Desktop/Hackathon/data/processed/main_results.json (2.9 MB) relevant_unique=4017 decided_by={'gemini': 7439, 'local': 2}
+exit=0

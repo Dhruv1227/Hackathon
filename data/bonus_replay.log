@@ -1,0 +1,77 @@
+  Cleaning and grouping copies
+  Detecting event region and building gazetteer
+  Local model scoring 52950 unique tweets
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 5452.58it/s]
+  Gemini labeling: batch 1/67  Gemini labeling: batch 2/67  Gemini labeling: batch 3/67
+  Gemini labeling: batch 4/67
+
+
+  Gemini labeling: batch 5/67  Gemini labeling: batch 6/67
+
+  Gemini labeling: batch 7/67  Gemini labeling: batch 8/67
+
+  Gemini labeling: batch 9/67
+  Gemini labeling: batch 10/67
+  Gemini labeling: batch 11/67
+  Gemini labeling: batch 12/67  Gemini labeling: batch 13/67
+
+  Gemini labeling: batch 14/67  Gemini labeling: batch 15/67
+
+  Gemini labeling: batch 16/67
+  Gemini labeling: batch 17/67  Gemini labeling: batch 18/67
+
+  Gemini labeling: batch 19/67
+  Gemini labeling: batch 20/67
+  Gemini labeling: batch 21/67  Gemini labeling: batch 22/67
+  Gemini labeling: batch 23/67
+
+  Gemini labeling: batch 24/67
+  Gemini labeling: batch 25/67
+  Gemini labeling: batch 26/67  Gemini labeling: batch 27/67
+
+  Gemini labeling: batch 28/67
+  Gemini labeling: batch 29/67
+  Gemini labeling: batch 30/67  Gemini labeling: batch 31/67
+
+  Gemini labeling: batch 32/67
+  Gemini labeling: batch 33/67
+  Gemini labeling: batch 34/67  Gemini labeling: batch 35/67
+
+  Gemini labeling: batch 36/67  Gemini labeling: batch 37/67
+
+  Gemini labeling: batch 38/67  Gemini labeling: batch 39/67
+
+  Gemini labeling: batch 40/67  Gemini labeling: batch 41/67
+  Gemini labeling: batch 42/67
+
+  Gemini labeling: batch 43/67
+  Gemini labeling: batch 44/67  Gemini labeling: batch 45/67
+  Gemini labeling: batch 46/67
+
+  Gemini labeling: batch 47/67
+  Gemini labeling: batch 48/67
+  Gemini labeling: batch 49/67
+  Gemini labeling: batch 50/67
+  Gemini labeling: batch 51/67
+  Gemini labeling: batch 52/67
+  Gemini labeling: batch 53/67
+  Gemini labeling: batch 54/67
+  Gemini labeling: batch 55/67
+  Gemini labeling: batch 56/67
+  Gemini labeling: batch 57/67
+  Gemini labeling: batch 58/67
+  Gemini labeling: batch 59/67
+  Gemini labeling: batch 60/67
+  Gemini labeling: batch 61/67
+  Gemini labeling: batch 62/67
+  Gemini labeling: batch 63/67
+  Gemini labeling: batch 64/67
+  Gemini labeling: batch 65/67  Gemini labeling: batch 66/67  Gemini labeling: batch 67/67
+
+
+  Resolving locations
+  Done
+wrote /Users/dhruvpatel/Desktop/Hackathon/data/processed/bonus_results.json (20.3 MB) | calls 0 | flood tweets (unique) 5509 | decided_by {'local': 35755, 'gemini': 17195}
+final system (flood) vs CrisisLexT26: {'n': 17632, 'positives': 3066, 'precision': 0.941, 'recall': 0.888, 'f1': 0.914, 'gemini_reviewed_share': 0.344}
+exit=0

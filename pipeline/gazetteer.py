@@ -198,9 +198,23 @@ def load_cgndb():
     return idx, nospace
 
 
+class WordSet:
+    """Membership test over 210k dictionary words in ~5 MB (a Python set of them takes ~30 MB)."""
+
+    def __init__(self, words):
+        import numpy as np
+        self._np = np
+        self.a = np.array(sorted({w.encode() for w in words}))
+
+    def __contains__(self, w: str) -> bool:
+        b = w.encode()
+        i = int(self._np.searchsorted(self.a, b))
+        return i < len(self.a) and self.a[i] == b
+
+
 @lru_cache(maxsize=1)
 def load_common_words():
-    return set(COMMON_WORDS.read_text().split()) if COMMON_WORDS.exists() else set()
+    return WordSet(COMMON_WORDS.read_text().split() if COMMON_WORDS.exists() else [])
 
 
 # ------------------------------------------------------------------------ runtime
@@ -330,7 +344,9 @@ class Gazetteer:
             best = max(cands, key=lambda r: (rank[r[6]] if r[6] != "city" or r[5] < 1_000_000 else 2.5, r[5]))
         kind = {"country": "country", "admin1": "state", "city": "city"}[best[6]]
         return {"name": best[0], "lat": best[1], "lon": best[2], "kind": kind, "source": "geonames",
-                "precision": "region" if best[6] != "city" else "locality", "province": best[4] or None,
+                # states (Queensland, Colorado) are real map locations; whole countries are only region-level
+                "precision": {"country": "region", "admin1": "state", "city": "locality"}[best[6]],
+                "province": best[4] or None,
                 "pop": best[5], "cc": best[3]}
 
     def _hashtag_keys(self, tag: str):

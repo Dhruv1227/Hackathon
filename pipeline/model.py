@@ -9,18 +9,18 @@ Training sources (all place-masked):
   category : CrisisLexT26 + HumAID + Gemini labels
   urgency  : Gemini labels (no public source has urgency)
 """
+import os
 import re
 from pathlib import Path
 
-import joblib
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 
 from pipeline.embed import embed
 from pipeline.taxonomy import CATEGORY_CODES
 
 ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = ROOT / "models/local_model.joblib"
+LITE_PATH = ROOT / "models/local_model_lite.npz"  # numpy-only copy of the heads, for the deployed app
 KW_RE = re.compile(r"flood|evacu|rescue|donat|sandbag|shelter|stranded|power (?:is )?out|boil|volunteer|"
                    r"relief|emergency|water level|high water|submerged|washed out|closed|damage|victims|prayers",
                    re.I)
@@ -42,8 +42,25 @@ def sqrt_class_weights(y) -> dict:
     return dict(zip(vals, np.sqrt(counts.max() / counts)))
 
 
+class LinearHead:
+    """numpy-only stand-in for a fitted LogisticRegression (same predict_proba, no scikit-learn/SciPy in memory)."""
+
+    def __init__(self, coef, intercept, classes):
+        self.coef_, self.intercept_, self.classes_ = coef, intercept, classes
+
+    def predict_proba(self, X):
+        z = X @ self.coef_.T + self.intercept_
+        if self.coef_.shape[0] == 1:  # binary: sklearn uses a sigmoid on one logit
+            p = 1.0 / (1.0 + np.exp(-z[:, 0]))
+            return np.column_stack([1 - p, p])
+        z = z - z.max(1, keepdims=True)  # multiclass: softmax
+        e = np.exp(z)
+        return e / e.sum(1, keepdims=True)
+
+
 class LocalModel:
     def __init__(self):
+        from sklearn.linear_model import LogisticRegression  # training only
         self.rel = LogisticRegression(C=2.0, max_iter=2000, class_weight="balanced")
         self.cat = LogisticRegression(C=2.0, max_iter=3000)
         self.urg = None
@@ -58,9 +75,11 @@ class LocalModel:
             # a relevant tweet is at least "general info"; sqrt weights keep urgency 3 near Gemini's rate
             # (balanced: 7.5% predicted vs 2% true; none: 0% -> life-safety tweets never surfaced)
             y_urg = np.clip(np.asarray(y_urg), 1, 3)
+            from sklearn.linear_model import LogisticRegression
             self.urg = LogisticRegression(C=1.0, max_iter=2000, class_weight=sqrt_class_weights(y_urg))
             self.urg.fit(X_urg, y_urg, sample_weight=w_urg)
         if X_haz is not None and len(set(y_haz)) > 1:
+            from sklearn.linear_model import LogisticRegression
             self.haz = LogisticRegression(C=2.0, max_iter=3000, class_weight=sqrt_class_weights(y_haz))
             self.haz.fit(X_haz, y_haz, sample_weight=w_haz)
         return self
@@ -91,12 +110,40 @@ class LocalModel:
                 "flood_uncertainty": 1 - np.abs(p_flood - 0.5) * 2}
 
     def save(self, path=MODEL_PATH):
+        import joblib
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self, path)
+        self.save_lite()
+
+    def save_lite(self, path=LITE_PATH):
+        heads = {k: getattr(self, k, None) for k in ("rel", "cat", "urg", "haz")}
+        arrays = {}
+        for k, h in heads.items():
+            if h is not None:
+                arrays[f"{k}_coef"], arrays[f"{k}_intercept"] = h.coef_, h.intercept_
+                cls = np.asarray(h.classes_)
+                arrays[f"{k}_classes"] = cls.astype(str) if cls.dtype == object else cls  # no pickled objects
+        np.savez_compressed(path, **arrays)
 
     @staticmethod
     def load(path=MODEL_PATH) -> "LocalModel":
-        return joblib.load(path)
+        """The deployed app has no scikit-learn: it loads the numpy-only heads (identical probabilities)."""
+        if os.getenv("LOCAL_MODEL") == "lite" or not path.exists():
+            return LocalModel.load_lite()
+        try:
+            import joblib
+            return joblib.load(path)
+        except ImportError:
+            return LocalModel.load_lite()
+
+    @staticmethod
+    def load_lite(path=LITE_PATH) -> "LocalModel":
+        d = np.load(path, allow_pickle=False)
+        m = LocalModel.__new__(LocalModel)
+        for k in ("rel", "cat", "urg", "haz"):
+            setattr(m, k, LinearHead(d[f"{k}_coef"], d[f"{k}_intercept"], d[f"{k}_classes"])
+                    if f"{k}_coef" in d else None)
+        return m
 
 
 assert set(CATEGORY_CODES) >= {"INFRA", "AID"}

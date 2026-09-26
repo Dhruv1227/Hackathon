@@ -42,6 +42,7 @@ def load_bonus_sample():
     """Gemini v4 labels of the random bonus training sample, joined to the masked bonus text."""
     bl = pd.read_csv(BONUS_SAMPLE, keep_default_na=False)
     bc = pd.read_csv(BONUS_CLEAN, keep_default_na=False)
+    bc = bc[bc.is_canonical.astype(str) == "True"]  # one row per group, or retweeted tweets count several times
     return bl.merge(bc[["group_id", "masked"]], on="group_id")
 
 

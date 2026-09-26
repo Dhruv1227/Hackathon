@@ -82,6 +82,24 @@ Places from the gazetteer alone: recall 0.86, precision 0.89 (provinces excluded
 Category agreement is ~0.5–0.6 for every method: the nine categories overlap (SUPPORT vs AID vs OTHER), so this
 mostly measures agreement with one annotator's reading.
 
+### Bonus: worldwide, multi-disaster data → floods only
+
+The bonus CSV (61,159 tweets, 52,950 unique) mixes ~30 disasters worldwide. Every relevant tweet gets a **hazard**
+(FLOOD, STORM, QUAKE, FIRE, BLAST, CRASH, ATTACK, OTHER) and a **country**; the app defaults to floods and shows a
+world map (country bubbles, places when zoomed in) with a country filter.
+
+Leakage guard: the bonus set contains ~80% of CrisisLexT26's labeled tweets, which the local model used to train on.
+Every training tweet that appears in a contest file was removed (18,596), and Gemini's 4,000-tweet training sample was
+drawn only from the other bonus rows. So the 17,632 CrisisLexT26 rows are a held-out test set whose truth
+(flood event ∧ judged related) doesn't come from Gemini. Budget: 20 requests (sample) + 69 (cascade).
+
+| Flood detection vs CrisisLexT26 (17,632 held-out tweets) | Precision | Recall | F1 |
+|---|---|---|---|
+| Local model alone | 0.93 | 0.50 | 0.65 |
+| **Full system** (Gemini reviewed 34%, ranked by flood probability) | **0.94** | **0.89** | **0.91** |
+
+Proxy caveat: typhoon/hurricane tweets about flooding count as "not flood" in this truth, so precision is a lower bound.
+
 ## Evaluation rules followed
 
 - Split **after** dedupe, by group; no group crosses tune / gold / train (asserted in `split.py`).
@@ -120,9 +138,13 @@ Rebuild everything from raw data (downloads go to `data/raw/`, gitignored):
 
 ## Deploy (Hugging Face Spaces, Docker)
 
-Create a Docker Space, add `GEMINI_API_KEY` as a Space **secret** and `GEMINI_BASE_URL` / `GEMINI_BACKEND=hackathon`
-as Space variables, then push this repo to it.
-The image bakes in the embedding model, the compiled gazetteer, and the precomputed main dataset.
+```bash
+.venv/bin/hf auth login                                        # once, with a write token
+.venv/bin/python -m deploy.push_space <hf-user>/<space-name>   # stages, scans for secrets, uploads
+```
+
+Then add `GEMINI_API_KEY` as a Space **secret** (Settings → Variables and secrets). The proxy address and backend are
+set in the Dockerfile (not secret). The image bakes in the embedding model, gazetteers, and both precomputed datasets.
 
 Data: CGNDB © Natural Resources Canada (Open Government Licence – Canada); map data © OpenStreetMap
 contributors (ODbL); CrisisLexT26 (Olteanu et al., 2015); HumAID (Alam et al., 2021).

@@ -1,0 +1,11 @@
+# Render Blueprint: New > Blueprint > pick this repo. GEMINI_API_KEY is asked for in the dashboard (never in git).
+services:
+  - type: web
+    name: living-flood-map
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false

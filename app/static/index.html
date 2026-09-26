@@ -30,6 +30,11 @@
       <label class="check"><input type="checkbox" id="uniqueOnly" checked> Unique tweets only (fold retweets &amp; copies)</label>
     </section>
 
+    <section class="block" id="hazBlock">
+      <div class="block-h">Hazard <button class="link" data-clear="hz">all hazards</button></div>
+      <div class="chips" id="hazChips"></div>
+    </section>
+
     <section class="block">
       <div class="block-h">Impact category <button class="link" data-clear="cat">clear</button></div>
       <div class="chips" id="catChips"></div>
@@ -38,6 +43,11 @@
     <section class="block">
       <div class="block-h">Urgency <button class="link" data-clear="urg">clear</button></div>
       <div class="chips" id="urgChips"></div>
+    </section>
+
+    <section class="block">
+      <div class="block-h">Country <button class="link" data-clear="cc">clear</button></div>
+      <div class="chips" id="ccChips"></div>
     </section>
 
     <section class="block">
@@ -56,7 +66,7 @@
     <section class="block">
       <div class="block-h">Situation summary</div>
       <button id="sumBtn" class="btn primary wide">Summarize this view</button>
-      <div id="summary" class="summary muted"></div>
+      <div id="summary" class="summary"></div>
     </section>
 
     <section class="block">
@@ -79,8 +89,8 @@
   <div class="mapwrap">
     <div id="map"></div>
     <div class="maptools">
-      <div class="seg small" id="colorSeg"><button data-v="cat" class="on">Color: category</button><button data-v="urg">urgency</button></div>
-      <label class="check small"><input type="checkbox" id="showRegion"> Province-level places</label>
+      <div class="seg small" id="colorSeg"><button data-v="cat" class="on">Color: category</button><button data-v="urg">urgency</button><button data-v="hz" id="colorHz" hidden>hazard</button></div>
+      <label class="check small"><input type="checkbox" id="showRegion"> Country / province-level places</label>
     </div>
     <div class="legend" id="legend"></div>
     <div id="timeline" class="timeline hidden">
@@ -100,7 +110,7 @@
     </label>
     <div id="jobStatus" class="muted"></div>
     <div class="progress"><div id="jobBar"></div></div>
-    <menu><button value="cancel" class="btn ghost">Close</button><button id="startUpload" value="default" class="btn primary">Process</button></menu>
+    <menu><button type="button" id="closeUpload" class="btn ghost">Close</button><button id="startUpload" value="default" class="btn primary">Process</button></menu>
   </form>
 </dialog>
 
