@@ -78,12 +78,12 @@ def load_builtin():
     for ds_id, stem in (("main", "main_results"), ("bonus", "bonus_results")):
         meta, gz = PROCESSED / f"{stem}.meta.json", PROCESSED / f"{stem}.json.gz"
         if meta.exists() and gz.exists():  # packed (deploy): never parse the big payload
-            m = json.loads(meta.read_text())
+            m = json.loads(meta.read_text(encoding="utf-8"))
             DATASETS[ds_id] = {"name": m["name"], "rows": m["rows"], "stats": m["stats"], "gz": gz.read_bytes(),
                                "summary": None, "summary_path": PROCESSED / f"{stem}.summary.json.gz",
                                "summary_calls": 0}
         elif (PROCESSED / f"{stem}.json").exists():  # local development: plain JSON
-            register_payload(ds_id, json.loads((PROCESSED / f"{stem}.json").read_text()))
+            register_payload(ds_id, json.loads((PROCESSED / f"{stem}.json").read_text(encoding="utf-8")))
 
 
 def summary_index(ds: dict) -> list[list]:
@@ -183,7 +183,7 @@ def _jsonable(o):
 @app.get("/")
 def index():
     # version-stamp the static files so browsers never run a stale app.js after a redeploy
-    html = (STATIC / "index.html").read_text()
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
     for name in ("app.js", "style.css"):
         html = html.replace(f"/static/{name}", f"/static/{name}?v={int((STATIC / name).stat().st_mtime)}")
     return HTMLResponse(html, headers={"Cache-Control": "no-cache"})

@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "labeler",
-      "runtimeExecutable": ".venv/bin/python",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": [
         "-m",
         "labeling.app"
@@ -12,13 +12,30 @@
     },
     {
       "name": "app",
-      "runtimeExecutable": ".venv/bin/uvicorn",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": [
+        "-m",
+        "uvicorn",
         "app.server:app",
         "--port",
         "7860"
       ],
       "port": 7860
+    },
+    {
+      "name": "streamlit",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "streamlit",
+        "run",
+        "streamlit_app/app.py",
+        "--server.port",
+        "8501",
+        "--server.headless",
+        "true"
+      ],
+      "port": 8501
     }
   ]
 }

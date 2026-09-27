@@ -13,3 +13,4 @@ data/cache/*
 data/processed/bonus_clean.csv
 data/processed/external.csv
 .deploy/
+*.pem
