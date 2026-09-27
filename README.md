@@ -119,6 +119,26 @@ cp .env.example .env          # add GEMINI_API_KEY (the app runs local-only with
 `.env` settings: `GEMINI_API_KEY`, `GEMINI_BASE_URL` (proxy address), `GEMINI_BACKEND=hackathon`,
 `GEMINI_MODEL` (empty = proxy default), optional `UPLOAD_CALL_BUDGET` (default 20), `GEMINI_BATCH_SIZE`
 (default 200), `GEMINI_QUOTA_RESERVE` (default 100). Check the remaining quota (no request is spent):
+
+### Streamlit UI (`streamlit_app/`)
+
+A read-only exploration UI over the precomputed datasets (`data/processed/`): dropdown filters
+(dataset, disaster type / hazard, relevance, category, urgency, place), an interactive map, a
+sortable tweet list with CSV/GeoJSON export, and "Summarize this view". The disaster-type filter
+defaults to **FLOOD only**, so the multi-hazard bonus dataset shows just flood-related tweets unless
+you widen it. Runs on the precomputed data alone — no local model or Gemini key required to browse;
+"Summarize this view" makes one Gemini call if a key is configured, otherwise it falls back to a
+plain excerpt.
+
+```bash
+.venv/bin/pip install -r streamlit_app/requirements.txt
+.venv/bin/streamlit run streamlit_app/app.py
+```
+
+Deploying to Streamlit Community Cloud: set the app's main file path to `streamlit_app/app.py`
+(it picks up `streamlit_app/requirements.txt` and the repo-root `.streamlit/config.toml` theme
+automatically) and add `GEMINI_API_KEY` etc. under the app's Secrets if you want live summaries.
+
 `.venv/bin/python -m pipeline.label_main status`.
 
 Rebuild everything from raw data (downloads go to `data/raw/`, gitignored):
