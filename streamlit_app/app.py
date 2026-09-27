@@ -199,7 +199,7 @@ with tab_map:
             size_max=32, zoom=zoom, center=center, map_style="open-street-map", height=560,
         )
         fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
 with tab_tweets:
     sort_by = st.selectbox("Sort", ["Most urgent", "Most shared", "Newest"], index=0)
@@ -216,7 +216,7 @@ with tab_tweets:
     table["places"] = show["places"].head(500).map(lambda ps: ", ".join(p["name"] for p in ps[:3]))
     table.columns = ["Tweet", "Category", "Urgency", "Hazard", "Shares", "Confidence", "Places"]
     st.caption(f"{len(view):,} tweets in view (showing up to 500)")
-    st.dataframe(table, use_container_width=True, height=520)
+    st.dataframe(table, width="stretch", height=520)
 
     exp1, exp2 = st.columns(2)
     csv_bytes = show[["id", "text", "cat", "urg", "hz", "conf", "n"]].to_csv(index=False).encode()
